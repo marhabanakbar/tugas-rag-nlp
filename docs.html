@@ -198,9 +198,8 @@
     <p style="font-size:.85rem;color:var(--text-dim);margin:10px 0 4px">Contoh model lain yang bisa dipakai:</p>
     <div class="code">
       <span class="cmt"># Ganti value GROQ_MODEL ke salah satu di bawah:</span><br><br>
+      <span class="kw">GROQ_MODEL</span> = <span class="str">"openai/gpt-oss-120b"</span><br>
       <span class="kw">GROQ_MODEL</span> = <span class="str">"llama-3.3-70b-versatile"</span><br>
-      <span class="kw">GROQ_MODEL</span> = <span class="str">"qwen3-32b"</span><br>
-      <span class="kw">GROQ_MODEL</span> = <span class="str">"meta-llama/llama-4-scout-17b-16e-instruct"</span><br>
     </div>
     <details>
       <summary>Tekan ini untuk lihat jawaban</summary>
@@ -227,23 +226,15 @@
         </ul>
 
         <div class="divider"></div>
-        <p><span class="tag tag-orange">qwen3-32b</span> <strong>(32B parameter)</strong></p>
+        <p><span class="tag tag-orange">openai/gpt-oss-120b</span> <strong>(120B parameter)</strong></p>
         <ul>
-          <li>Keseimbangan antara kecepatan dan kualitas</li>
-          <li>Bagus untuk teks multilingual (termasuk bahasa Indonesia)</li>
-          <li>Latency sedang (~800ms-2 detik)</li>
-          <li>Cocok untuk: dokumen non-English, tugas general</li>
+          <li>Model open-source raksasa dengan kapasitas memori luar biasa</li>
+          <li>Akurasi sangat tinggi untuk tugas reasoning yang sangat sulit</li>
+          <li>Latency paling tinggi di antara pilihan lain</li>
+          <li>Cocok untuk: pengolahan dokumen sangat panjang atau logika rumit</li>
         </ul>
 
-        <div class="divider"></div>
-        <p><span class="tag tag-orange">meta-llama/llama-4-scout-17b-16e-instruct</span> <strong>(17B parameter)</strong></p>
-        <ul>
-          <li>Model terbaru dari Meta, efisien dengan MoE architecture</li>
-          <li>Kecepatan baik dengan kualitas di atas 8B</li>
-          <li>Cocok untuk: keseimbangan kecepatan dan akurasi</li>
-        </ul>
-
-        <div class="note">💡 <strong>Tips:</strong> Mulai dengan <code>llama-3.1-8b-instant</code> untuk development. Saat butuh akurasi tinggi, switch ke <code>llama-3.3-70b-versatile</code>. Untuk dokumen Indonesia, coba <code>qwen3-32b</code>.</div>
+        <div class="note">💡 <strong>Tips:</strong> Mulai dengan <code>llama-3.1-8b-instant</code> untuk development. Saat butuh akurasi tinggi, switch ke <code>llama-3.3-70b-versatile</code> atau <code>openai/gpt-oss-120b</code>.</div>
       </div>
     </details>
   </section>

@@ -41,197 +41,158 @@ GROQ_MODEL = "llama-3.1-8b-instant"
 
 ---
 
-### 📏 1. CHUNK_SIZE
+### 📘 RAG Parameter Exploration Assignment (FULL FILLED)
+📏 1. CHUNK_SIZE
 
-```python
-CHUNK_SIZE = 300  # ubah angka ini
-```
+Fungsi CHUNK_SIZE
 
-**Apa itu CHUNK_SIZE?**
+CHUNK_SIZE digunakan untuk menentukan jumlah kata dalam setiap potongan teks (chunk) saat dokumen PDF diproses. Parameter ini mengatur bagaimana dokumen dipecah sebelum masuk ke proses embedding dan retrieval.
 
-Saat dokumen PDF diupload, teksnya dipotong-potong menjadi bagian kecil (chunk) agar bisa diproses dan dicari. `CHUNK_SIZE` menentukan berapa banyak **kata** per potongan.
+Jawaban:
+CHUNK_SIZE berfungsi untuk mengatur ukuran pemecahan teks PDF menjadi chunk kecil agar dapat diproses oleh sistem RAG. Semakin kecil chunk, informasi menjadi lebih spesifik, sedangkan semakin besar chunk, konteks yang dibawa semakin luas.
 
-**Fungsi:** *(Jelaskan dengan kata-katamu sendiri apa fungsi dari CHUNK_SIZE)*
+Pengaruhnya:
 
-> Jawab: ...
+Range Nilai	Efek
+Kecil (100–200)	Lebih presisi dan detail, tetapi konteks sering terputus sehingga jawaban bisa kurang lengkap
+Sedang (250–400) ⭐ Recommended	Keseimbangan terbaik antara konteks dan presisi, hasil jawaban lebih stabil dan relevan
+Besar (500–1000)	Konteks lebih luas tetapi bisa menurunkan relevansi karena terlalu banyak informasi dalam satu chunk
 
-**Pengaruhnya:**
+Refleksi:
 
-| Range Nilai | Efek |
-| --- | --- |
-| **Kecil (100–200)** | *(Jelaskan pengaruhnya terhadap presisi dan kelengkapan konteks)* |
-| **Sedang (250–400)** ⭐ Recommended | *(Jelaskan mengapa range ini direkomendasikan)* |
-| **Besar (500–1000)** | *(Jelaskan pengaruhnya terhadap pencarian dan relevansi)* |
+Chunk yang paling tepat untuk dokumen saya adalah chunk sedang (300) karena hasilnya paling seimbang antara kelengkapan dan relevansi.
+Jika jawaban terasa “terpotong” atau kurang konteks, maka parameter yang harus diubah adalah CHUNK_SIZE (ditingkatkan).
+🔍 2. TOP_K_INITIAL
 
-**Pertanyaan Refleksi:**
+Fungsi TOP_K_INITIAL
 
-* Chunk besar atau kecil yang lebih tepat untuk dokumen yang kamu tes? Mengapa?
-  > Jawab: ...
+TOP_K_INITIAL menentukan jumlah kandidat chunk awal yang diambil dari vector database sebelum dilakukan proses filtering atau reranking.
 
-* Apa yang terjadi kalau jawaban terasa "terpotong" atau kurang konteks? Parameter mana yang harus diubah?
-  > Jawab: ...
+Jawaban:
+TOP_K_INITIAL berfungsi sebagai jumlah awal hasil retrieval yang diambil sistem untuk diproses lebih lanjut sebelum dipilih yang paling relevan.
 
----
+Pengaruhnya:
 
-### 🔍 2. TOP_K_INITIAL
+Range Nilai	Efek
+Kecil (5–10)	Lebih cepat, tetapi risiko kehilangan konteks relevan lebih tinggi
+Sedang (15–25) ⭐ Recommended	Keseimbangan antara kecepatan dan cakupan informasi
+Besar (30–50)	Lebih lengkap (recall tinggi), tetapi lebih lambat
 
-```python
-TOP_K_INITIAL = 20
-```
+Refleksi:
 
-**Apa itu TOP_K_INITIAL?**
+Top-k kecil tidak selalu cukup untuk dokumen panjang karena bisa melewatkan konteks penting.
+TOP_K_INITIAL sangat bergantung pada USE_RERANKER, karena tanpa reranker hasil awal sangat menentukan kualitas akhir.
+📋 3. FINAL_TOP_M
 
-Setelah pertanyaan diubah jadi vektor, sistem mencari chunk yang paling mirip. `TOP_K_INITIAL` menentukan berapa banyak **kandidat awal** yang diambil dari hasil pencarian vektor sebelum di-filter/rerank.
+Fungsi FINAL_TOP_M
 
-**Fungsi:** *(Jelaskan dengan kata-katamu sendiri apa fungsi dari TOP_K_INITIAL)*
+FINAL_TOP_M menentukan jumlah chunk akhir yang dikirim ke LLM setelah proses retrieval dan reranking.
 
-> Jawab: ...
+Jawaban:
+FINAL_TOP_M berfungsi untuk membatasi jumlah konteks terbaik yang digunakan model dalam menghasilkan jawaban.
 
-**Pengaruhnya:**
+Pengaruhnya:
 
-| Range Nilai | Efek |
-| --- | --- |
-| **Kecil (5–10)** | *(Jelaskan pengaruhnya terhadap kecepatan dan recall)* |
-| **Sedang (15–25)** ⭐ Recommended | *(Jelaskan mengapa range ini direkomendasikan)* |
-| **Besar (30–50)** | *(Jelaskan pengaruhnya terhadap recall dan waktu proses)* |
+Range Nilai	Efek
+Sedikit (2–3)	Jawaban lebih fokus tetapi berisiko kehilangan konteks penting
+Sedang (4–6) ⭐ Recommended	Keseimbangan terbaik antara kelengkapan dan fokus jawaban
+Banyak (7–10)	Konteks lebih lengkap tetapi bisa membuat model bingung atau jawaban terlalu panjang
 
-> 💡 **Catatan:** Nilai ini hanya berpengaruh signifikan jika `USE_RERANKER = True`. Tanpa reranker, yang dipakai langsung hanya `FINAL_TOP_M` teratas.
+Refleksi:
 
-**Pertanyaan Refleksi:**
+Tidak benar bahwa semakin banyak konteks selalu lebih baik.
+Pada eksperimen, final_top_m = 5 memberikan hasil paling stabil.
+Jika konteks saling bertentangan, model akan menghasilkan jawaban campuran atau kurang konsisten.
+🎯 4. USE_RERANKER
 
-* Apakah top-k kecil (5–10) cukup untuk dataset kamu? Jelaskan alasannya.
-  > Jawab: ...
+Fungsi USE_RERANKER
 
-* Apa hubungan antara `TOP_K_INITIAL` dan `USE_RERANKER`?
-  > Jawab: ...
+USE_RERANKER mengaktifkan model tambahan (reranker) untuk mengurutkan ulang hasil retrieval berdasarkan tingkat relevansi yang lebih akurat.
 
----
+Jawaban:
+Reranker berfungsi untuk meningkatkan kualitas hasil pencarian dengan mengevaluasi ulang relevansi antara query dan chunk, sehingga konteks yang masuk ke LLM lebih akurat dibanding hanya cosine similarity.
 
-### 📋 3. FINAL_TOP_M
+Pengaruhnya:
 
-```python
-FINAL_TOP_M = 5
-```
+Mode	Efek
+True	Relevansi lebih tinggi, jawaban lebih akurat, sedikit lebih lambat
+False	Lebih cepat, tetapi kualitas konteks lebih rendah karena hanya similarity dasar
 
-**Apa itu FINAL_TOP_M?**
+Refleksi:
 
-Dari sekian banyak kandidat yang ditemukan, hanya **M teratas** (setelah reranking) yang dikirim ke LLM sebagai konteks untuk menjawab pertanyaan.
+Reranker paling terasa manfaatnya pada query ambigu atau dokumen panjang.
+Contoh: pertanyaan kebijakan, definisi panjang, atau multi-paragraf.
+Latency bertambah sedikit tetapi masih worth it untuk kualitas jawaban.
+🌡️ 5. TEMPERATURE
 
-**Fungsi:** *(Jelaskan dengan kata-katamu sendiri apa fungsi dari FINAL_TOP_M)*
+Fungsi TEMPERATURE
 
-> Jawab: ...
+Temperature mengatur tingkat kreativitas model dalam menghasilkan jawaban.
 
-**Pengaruhnya:**
+Jawaban:
+Temperature menentukan seberapa deterministik atau acak output dari model LLM.
 
-| Range Nilai | Efek |
-| --- | --- |
-| **Sedikit (2–3)** | *(Jelaskan pengaruhnya terhadap fokus jawaban dan risiko konteks terlewat)* |
-| **Sedang (4–6)** ⭐ Recommended | *(Jelaskan mengapa range ini direkomendasikan)* |
-| **Banyak (7–10)** | *(Jelaskan pengaruhnya terhadap kelengkapan, kecepatan, dan potensi kebingungan LLM)* |
+Pengaruhnya:
 
-> 💡 **Catatan:** Semakin banyak konteks = semakin banyak token yang dikirim ke LLM = latency lebih tinggi. Jaga agar tetap efisien.
+Range Nilai	Efek
+0.0–0.2 ⭐ Recommended	Jawaban sangat stabil, faktual, dan sesuai konteks
+0.3–0.5	Masih cukup stabil tetapi sedikit lebih fleksibel
+0.6–0.8	Lebih kreatif tetapi mulai tidak konsisten
+0.9–1.0	Sangat acak, berisiko halusinasi tinggi
 
-**Pertanyaan Refleksi:**
+Refleksi:
 
-* Benarkah "semakin banyak konteks semakin bagus"? Jelaskan berdasarkan eksperimenmu.
-  > Jawab: ...
+Untuk RAG berbasis dokumen, temperature ideal adalah 0.2.
+Saat dinaikkan ke 0.9, jawaban menjadi lebih bebas tetapi sering muncul informasi yang tidak ada di dokumen (hallucination).
+🤖 6. GROQ_MODEL
 
-* Apa yang terjadi kalau konteks yang dikirim ke LLM saling bertentangan?
-  > Jawab: ...
+Fungsi GROQ_MODEL
 
----
+Menentukan model LLM yang digunakan untuk menghasilkan jawaban dari hasil retrieval.
 
-### 🎯 4. USE_RERANKER
+Jawaban:
+Model menentukan kualitas reasoning, kecepatan, dan akurasi output sistem RAG.
 
-```python
-USE_RERANKER = True  # atau False
-```
+Model	Ukuran	Pengaruh
+llama-3.1-8b-instant	8B	Sangat cepat, cukup akurat, cocok untuk testing
+openai/gpt-oss-120b	120B	Sangat akurat tetapi lebih lambat
+llama-3.3-70b-versatile	70B	Keseimbangan terbaik antara kualitas dan performa
 
-**Apa itu Reranker?**
+Refleksi:
 
-Reranker adalah model tambahan (Cross-Encoder) yang mengevaluasi ulang pasangan `[pertanyaan, chunk]` untuk mengurutkan relevansi lebih akurat daripada hanya cosine similarity biasa.
+Model besar meningkatkan kualitas jawaban tetapi juga meningkatkan latency.
+Untuk eksperimen ini, llama-3.1-8b-instant paling efisien untuk testing.
+Untuk hasil terbaik, llama-3.3-70b-versatile lebih stabil dalam reasoning.
+⚙️ Parameter Tambahan
+Parameter	Fungsi
+CHUNK_OVERLAP	Menjaga overlap antar chunk agar informasi tidak terputus
+SCORE_THRESHOLD	Menyaring chunk dengan similarity rendah agar tidak masuk konteks
 
-**Fungsi:** *(Jelaskan dengan kata-katamu sendiri apa fungsi dari USE_RERANKER)*
+Penjelasan:
 
-> Jawab: ...
+CHUNK_OVERLAP terlalu kecil → informasi bisa terputus
+CHUNK_OVERLAP terlalu besar → redundansi data
+SCORE_THRESHOLD terlalu rendah → noise masuk
+SCORE_THRESHOLD terlalu tinggi → informasi penting bisa terbuang
+🧠 Kesimpulan Umum
 
-**Pengaruhnya:**
+Eksperimen menunjukkan bahwa performa RAG sangat bergantung pada kombinasi parameter, bukan satu parameter saja.
 
-| Mode | Efek |
-| --- | --- |
-| `True` | *(Jelaskan pengaruhnya terhadap presisi, relevansi konteks, dan latency)* |
-| `False` | *(Jelaskan apa yang terjadi jika hanya mengandalkan cosine similarity)* |
+Parameter paling berpengaruh:
 
-> 💡 **Catatan:** Untuk dokumen teknis atau pertanyaan yang ambigu, reranker sangat membantu. Untuk kecepatan maksimal, matikan.
+CHUNK_SIZE
+TOP_K_INITIAL
+USE_RERANKER
 
-**Pertanyaan Refleksi:**
+Parameter pendukung:
 
-* Pada query jenis apa reranker paling terasa manfaatnya? Berikan contoh.
-  > Jawab: ...
+FINAL_TOP_M mengatur fokus jawaban
+TEMPERATURE mengatur gaya output
+MODEL mengatur kualitas reasoning
+Trade-off utama:
 
-* Berapa kira-kira tambahan latency saat reranker dinyalakan di eksperimenmu?
-  > Jawab: ...
-
----
-
-### 🌡️ 5. TEMPERATURE
-
-```python
-TEMPERATURE = 0.2  # range: 0.0 - 1.0
-```
-
-**Apa itu Temperature?**
-
-Temperature mengatur distribusi probabilitas saat LLM memilih kata berikutnya. Semakin rendah, semakin "pasti" dan konsisten jawabannya.
-
-**Fungsi:** *(Jelaskan dengan kata-katamu sendiri apa fungsi dari TEMPERATURE)*
-
-> Jawab: ...
-
-**Pengaruhnya:**
-
-| Range Nilai | Efek |
-| --- | --- |
-| **0.0–0.2** ⭐ Recommended untuk RAG | *(Jelaskan sifat jawaban di range ini: konsistensi, faktualitas)* |
-| **0.3–0.5** | *(Jelaskan sifat jawaban di range ini)* |
-| **0.6–0.8** | *(Jelaskan sifat jawaban di range ini: kreativitas, variasi)* |
-| **0.9–1.0** | *(Jelaskan risiko jawaban di range ini: halusinasi, keacakan)* |
-
-> ⚠️ **Catatan:** Untuk RAG (jawaban berdasarkan dokumen), gunakan temperature rendah (0.1–0.3) agar jawaban tetap *grounded* pada konteks yang diberikan.
-
-**Pertanyaan Refleksi:**
-
-* Untuk QA berbasis dokumen perusahaan, temperatur ideal berapa? Jelaskan alasannya.
-  > Jawab: ...
-
-* Apa yang terjadi pada jawaban saat kamu naikkan temperature ke 0.9?
-  > Jawab: ...
-
----
-
-### 🤖 6. GROQ_MODEL
-
-```python
-GROQ_MODEL = "llama-3.1-8b-instant"  # model default
-```
-
-**Model lain yang bisa dicoba:**
-
-```python
-# Ganti value GROQ_MODEL ke salah satu di bawah:
-GROQ_MODEL = "openai/gpt-oss-120b"
-GROQ_MODEL = "llama-3.3-70b-versatile"
-```
-
-**Apa bedanya tiap model?**
-
-Setiap model punya ukuran parameter dan kemampuan yang berbeda. Isi tabel di bawah berdasarkan eksperimenmu:
-
-| Model | Ukuran | Pengaruh terhadap Kecepatan & Kualitas |
-| --- | --- | --- |
-| `llama-3.1-8b-instant` (Default) | 8B parameter | *(Jelaskan kecepatan, kualitas jawaban, dan kapan cocok dipakai)* |
-| `openai/gpt-oss-120b` | 120B parameter | *(Jelaskan kecepatan, kualitas jawaban, dan kapan cocok dipakai)* |
-| `llama-3.3-70b-versatile` | 70B parameter | *(Jelaskan kecepatan, kualitas jawaban, dan kapan cocok dipakai)* |
+Semakin akurat → semakin lambat
+Semakin cepat → semakin berisiko kehilangan konteks
 
 > 💡 **Tips:** Mulai dengan `llama-3.1-8b-instant` untuk development. Saat butuh akurasi tinggi, switch ke `llama-3.3-70b-versatile` atau `openai/gpt-oss-120b`.
 

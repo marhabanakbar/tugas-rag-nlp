@@ -18,7 +18,7 @@ groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 # KONFIGURASI INTI (5 TUNABLE PARAMETER)
 # -----------------------------
 # 1) Ukuran chunk 
-CHUNK_SIZE = 300
+CHUNK_SIZE = 100
 # 2) Banyaknya kandidat awal dari vector search
 TOP_K_INITIAL = 20
 # 3) Jumlah konteks 
